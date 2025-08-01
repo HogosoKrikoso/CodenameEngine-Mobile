@@ -145,7 +145,7 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 	}
 
 	public function addTouchPad(?sDPad:String = "NONE", ?sAction:String = "NONE") {
-		var DPad:FlxDPadMode = switch(sDPad) {
+		var DPad = switch(sDPad) {
 			case "NONE": FlxDPadMode.NONE;
 			case "UP_DOWN": FlxDPadMode.UP_DOWN;
 			case "LEFT_RIGHT": FlxDPadMode.LEFT_RIGHT;
@@ -153,7 +153,7 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 			case "RIGHT_FULL": FlxDPadMode.RIGHT_FULL;
 			case "FULL": FlxDPadMode.FULL;
 		}
-		var Action:FlxActionMode = switch(sAction) {
+		var Action = switch(sAction) {
 			case "NONE": FlxActionMode.NONE;
 			case "A": FlxActionMode.A;
 			case "B": FlxActionMode.B;
