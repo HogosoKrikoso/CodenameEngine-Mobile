@@ -16,6 +16,8 @@ import funkin.options.PlayerSettings;
 import flixel.FlxCamera;
 import flixel.input.actions.FlxActionInput;
 import funkin.mobile.controls.FlxVirtualPad;
+import funkin.mobile.controls.FlxVirtualPad.FlxDPadMode;
+import funkin.mobile.controls.FlxVirtualPad.FlxActionMode;
 import funkin.mobile.controls.HitBox;
 import funkin.mobile.controls.Mobilecontrols;
 #end
@@ -120,11 +122,13 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 
 	#if mobile
 	public var vPad:FlxVirtualPad;
+	public var touchPad:FlxVirtualPad;
 	var mcontrols:Mobilecontrols;
 
 	var trackedinputs:Array<FlxActionInput> = [];
 
 	public function addVPad(?DPad:FlxDPadMode, ?Action:FlxActionMode) {
+		
 		vPad = new FlxVirtualPad(DPad, Action);
 		vPad.alpha = 0.35;
 		add(vPad);
@@ -138,6 +142,41 @@ class MusicBeatState extends FlxState implements IBeatReceiver
     FlxG.cameras.add(camcontrol, false); 
     camcontrol.bgColor.alpha = 0; 
     vPad.cameras = [camcontrol];
+	}
+
+	public function addTouchPad(?sDPad:String = "NONE", ?sAction:String = "NONE") {
+		var DPad:FlxDPadMode = switch(sDPad) {
+			case "NONE": FlxDPadMode.NONE;
+			case "UP_DOWN": FlxDPadMode.UP_DOWN;
+			case "LEFT_RIGHT": FlxDPadMode.LEFT_RIGHT;
+			case "UP_LEFT_RIGHT": FlxDPadMode.UP_LEFT_RIGHT;
+			case "RIGHT_FULL": FlxDPadMode.RIGHT_FULL;
+			case "FULL": FlxDPadMode.FULL;
+		}
+		var Action:FlxActionMode = switch(sAction) {
+			case "NONE": FlxActionMode.NONE;
+			case "A": FlxActionMode.A;
+			case "B": FlxActionMode.B;
+			case "A_B": FlxActionMode.A_B;
+			case "A_B_C": FlxActionMode.A_B_C;
+			case "A_B_C_X_Y": FlxActionMode.A_B_C_X_Y;
+			case "B_C": FlxActionMode.B_C;
+			case "B_C_X_Y": FlxActionMode.B_C_X_Y;
+			case "B_X_Y": FlxActionMode.B_X_Y;
+		}
+		touchPad = new FlxVirtualPad(DPad, Action);
+		touchPad.alpha = 0.35;
+		add(touchPad);
+		controls.setUIVirtualPad(touchPad, DPad, Action);
+        trackedinputs = controls.trackedUIinputs;
+		controls.trackedUIinputs = [];
+	}
+	
+	public function addTouchPadCamera() {
+		var camcontrol = new FlxCamera(); 
+		FlxG.cameras.add(camcontrol, false); 
+		camcontrol.bgColor.alpha = 0; 
+		touchPad.cameras = [camcontrol];
 	}
 
 	public function removeVPad() {
@@ -205,14 +244,6 @@ class MusicBeatState extends FlxState implements IBeatReceiver
 					var script = Script.create(path);
 					if (script is DummyScript) continue;
 					script.remappedNames.set(script.fileName, '$i:${script.fileName}');
-					#if mobile
-					stateScripts.set('setVirtualPad', function(?DPad:FlxDPadMode, ?Action:FlxActionMode, ?addPadCam = false){
-						if (vPad == null) return;
-                        removeVPad();
-                        addVPad(DPad, Action);
-                        if(addPadCam) addVPadCamera();
-					});
-					#end
 					stateScripts.add(script);
 					script.load();
 
